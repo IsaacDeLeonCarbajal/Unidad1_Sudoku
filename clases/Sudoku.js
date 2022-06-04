@@ -9,11 +9,21 @@ class Sudoku {
     tablero;
 
     constructor(tamano) {
+        this.nuevoJuego(tamano);
+    }
+
+    /**
+     * Actualizar el tamaño del tablero, eliminar de la interfaz el tablero del juego anterior y crear y dibujar un nuevo tablero con algunos valores iniciales
+     * @param {number} tamano El tamaño del tablero. Debe ser uno de 4, 9, 16, 25
+     */
+    nuevoJuego(tamano) {
         this.tamano = tamano;
         this.tamanoInterno = Math.sqrt(this.tamano);
 
-        this.crearTablero(this.tamano);
-        this.inicializarTablero();
+        document.getElementById("divTablero").innerHTML = ""; //Eliminar el tablero del juego anterior
+
+        this.crearTablero(); //Crear y dibujar el tablero
+        this.inicializarTablero(); //Colocar algunos valores iniciales al tablero
     }
 
     /**
@@ -64,8 +74,6 @@ class Sudoku {
             }
         }
 
-        // console.log("Comprobar desde " + cuadX + ", " + cuadY);
-
         return true; //Si se llega aquí, el número es válido
     }
 
@@ -79,11 +87,19 @@ class Sudoku {
             for (let y = 0; y < this.tamano; y++) {
                 let casilla = this.tablero[x][y]; //Obtener la casilla
 
-                if (isNaN(casilla.value) || !this.validarNumero(new Posicion(x, y), casilla.value)) { //Si no es un número o la validación no fue correcta
+                if (isNaN(parseInt(casilla.value)) || !this.validarNumero(new Posicion(x, y), parseInt(casilla.value))) { //Si no es un número o la validación no fue correcta
                     return false; //El tablero está incompleto
                 }
             }
         }
+
+        //Una vez terminado el juego, no dejar editar
+        for (let x = 0; x < this.tamano; x++) {
+            for (let y = 0; y < this.tamano; y++) {
+                this.tablero[x][y].readOnly = true; //No dejar editar la casilla
+            }
+        }
+
 
         return true;
     }
@@ -93,41 +109,60 @@ class Sudoku {
      * 
      * @param {number} tamano Tamaño del tablero
      */
-    crearTablero(tamano) {
+    crearTablero() {
         this.tablero = [];
         let divTablero = document.getElementById("divTablero");
 
-        for (let y = 0; y < tamano; y++) { //En todo lo alto
+        for (let y = 0; y < this.tamano; y++) { //En todo lo alto
             let divFila = document.createElement("div");
 
-            for (let x = 0; x < tamano; x++) { //En todo lo largo
+            for (let x = 0; x < this.tamano; x++) { //En todo lo largo
                 /*
                 El codigo de abajo es equivalente en HTML a:
                 <input type="number" class="casilla casillaCorrecta"
                     maxlength="1" max="9" min="1"
-                    oninput="if(this.value.length > this.maxLength) {/ function /};">
+                    oninput="() => {}"
+                    onfocus="() => {}">
                 */
                 let casilla = document.createElement("input");
                 casilla.type = "number";
-                casilla.maxLength = 1;
+                casilla.maxLength = this.tamano.length;
                 casilla.classList = claseCorrecta;
                 casilla.min = "1";
-                casilla.max = "9";
-                casilla.oninput = () => {
+                casilla.max = this.tamano;
+                casilla.oninput = () => { //Al ingresar datos en la casilla
                     if (casilla.value.length > casilla.maxLength) { //Si se ingresa más de un caracter
-                        casilla.value = casilla.value.slice(0, casilla.maxLength); //Cortar la entrada, dejando sólo el primer caracter
+                        casilla.value = casilla.value.slice(casilla.maxLength - (casilla.maxLength - 1), casilla.maxLength + 1); //Cortar la entrada, dejando sólo los últimos caracteres válidos
                     }
 
                     if (this.validarNumero(new Posicion(x, y), parseInt(casilla.value)) || casilla.value.length == 0) { //Si la casilla está vacía o se ingresó un número correcto
                         casilla.classList = claseCorrecta; //Actualizar el estilo de la casilla
 
                         if (this.comprobarTablero()) { //Si el tablero está completo
-                            alert("Felicidades");
+                            document.getElementById("dlgGanador").showModal();
                         }
                     } else { //Si el número ingresado no es correcto
                         casilla.classList = claseIncorrecta; //Actualizar el estilo de la casilla
                     }
-                }
+                };
+                casilla.onfocus = () => { //Al seleccionar una casilla
+                    /*
+                    Este método se usa así porque al ingresar el valor de una casilla A, y choca con el valor de una casilla B, 
+                    se cambia el estilo de la casilla A al de casilla incorrecta, 
+                    pero si luego se cambia el valor de la casilla B, 
+                    la casilla A debería tener el estilo de casilla correcta, cosa que no se hace.
+                    Es por ello que se actualiza el estilo de la csailla A al momento de seleccionarla.
+                    */
+                    if (casilla.readOnly == true) { //Si la casilla es de sólo lectura
+                        return; //No hacer nada con ella
+                    }
+
+                    if (this.validarNumero(new Posicion(x, y), parseInt(casilla.value)) || casilla.value.length == 0) { //Si la casilla está vacía o se ingresó un número correcto
+                        casilla.classList = claseCorrecta; //Actualizar el estilo de la casilla
+                    } else { //Si el número ingresado no es correcto
+                        casilla.classList = claseIncorrecta; //Actualizar el estilo de la casilla
+                    }
+                };
 
                 divFila.insertAdjacentElement("beforeend", casilla);
 
