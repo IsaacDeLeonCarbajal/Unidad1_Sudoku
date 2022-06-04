@@ -19,10 +19,11 @@ button {
     cursor: pointer;
     transition-duration: 300ms;
 }
+
 button:hover {
     background-color: rgb(20, 37, 156);
     border-color: rgb(20, 37, 156);
-    color:white;
+    color: white;
 }
 
 .casilla {
@@ -63,6 +64,7 @@ button:hover {
     border-color: black;
     color: black;
 }
+
 .btnDialog:hover {
     background-color: black;
     border-color: black;
