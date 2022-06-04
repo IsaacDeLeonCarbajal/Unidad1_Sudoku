@@ -1,98 +1,19 @@
-const casillaVacia = '-'; //Caracter que se muestra en las casillas vacías
+//Clases para el estilo CSS de las casillas
+const claseCorrecta = "casilla casillaCorrecta";
+const claseIncorrecta = "casilla casillaIncorrecta";
 
 class Sudoku {
 
     tamano;
-    tamanoInterno;
+    tamanoCaja;
     tablero;
 
-    static numerosValidos = [4, 9, 16, 25];
+    constructor(tamano) {
+        this.tamano = tamano;
+        this.tamanoInterno = Math.sqrt(this.tamano);
 
-    constructor() {
-    }
-
-    jugar() {
-        let error; //Indica si hay error en alguno de los procesos
-
-        do { //Pedir un tamaño de tablero válido
-            error = false;
-
-            this.tamano = parseInt(prompt("Ingrese el tamaño del tablero.\n"
-                + "Debe ser uno de " + Sudoku.numerosValidos.join(", "))); //Pedir el tamaño, indicando cuáles son válidos
-            
-            if (isNaN(this.tamano)) { //Si no se ingresó un número
-                error = true;
-                alert("El tamaño debe ser un número");
-            } else if (!Sudoku.numerosValidos.includes(this.tamano)) { //Si el tamaño no es válido
-                error = true;
-                alert("El número debe ser uno de " + Sudoku.numerosValidos.join(", ")); //Indicar cuáles son los números válidos
-            }
-        } while (error);
-
-        this.tamanoInterno = Math.sqrt(this.tamano); //Calcular el tamaño de cada cuadro interno
-        this.tablero = this.crearTablero(this.tamano); //Crear el tablero
+        this.crearTablero(this.tamano);
         this.inicializarTablero();
-
-        this.mostrarTablero();
-
-        while (!this.comprobarTablero()) { //Mientras no se haya ganado
-            console.log("\n\n");
-
-            this.realizarTurno();
-
-            this.mostrarTablero(); //Mostrar el tablero después de cada turno
-        }
-
-        alert("FELICIDADES!!!\n"
-            + "Usted ha ganado");
-
-        console.log("\n\n\n");
-        console.log("FELICIDADES!!!\n"
-            + "Usted ha ganado");
-        this.mostrarTablero();
-    }
-
-    /**
-     * Pedir al jugador que realice su turno.
-     * Se le pide una posición, y un número.
-     */
-    realizarTurno() {
-        let pos; //Posición donde se quiere colocar el número
-        let num; //Número que se quiere colocar en la posición
-
-        do { //Pedir una posicion váida
-            pos = Posicion.pedirPosicion(this.tamano); //Pedir la posición
-
-            if (pos == null) {
-                alert("Posición inválida");
-            }
-        } while (pos == null);
-
-        do { //Pedir un número válido
-            num = prompt("Qué número desea colocar en " + pos.toString() + ", o '" + casillaVacia + "' si quiere borrar el número en la posición"); //Pedir el número
-
-            if (num == casillaVacia) { //Borrar el número en la posicion deseada
-                alert("Borrar el número en " + pos.toString());
-                console.log("Eliminar el número en la posición " + pos.toString());
-
-                this.tablero[pos.x][pos.y] = num; //Actualizar el valor del tablero en la posición deseada
-                return; //No intentar comprobar el valor ingresado
-            } else if (isNaN(num)) { //Si no se ingresó un número o 'X'
-                alert("Entrada inválida. Debe ser un número o '" + casillaVacia + "'");
-            } else if (num < 1 || num > this.tamano) { //Si el número ingresado está fuera del rango
-                alert("Número inválido. Debe estar entre 1 y " + this.tamano);
-            }
-        } while (isNaN(num) || (num < 1 || num > this.tamano));
-
-        if (this.validarNumero(pos, num)) { //Si el número es válido
-            this.tablero[pos.x][pos.y] = parseInt(num);
-            alert("El numero " + parseInt(num) + " es válido");
-        } else { //Si el número no es válido
-            this.tablero[pos.x][pos.y] = parseInt(num);
-            alert("El numero " + parseInt(num) + " no es válido");
-        }
-
-        console.log("Ingresar el valor " + num + " en la posición " + pos.toString()); //Mostrar el valor ingresado en consola
     }
 
     /**
@@ -107,11 +28,15 @@ class Sudoku {
      * @returns true si el número es válido, false si no
      */
     validarNumero(pos, num) {
+        if (isNaN(num) || (num < 1 || num > this.tamano)) { //Si el valor no es un número o está fuera del rango
+            return false; //No es válido
+        }
+
         //Comprobar la fila
         for (let x = 0; x < this.tamano; x++) {
             if (x == pos.x) { //No comprobar la posición donde se está ingresando
                 continue;
-            } else if (this.tablero[x][pos.y] == num) { //Si el numero existe dentro de la misma fila
+            } else if (this.tablero[x][pos.y].value == num) { //Si el numero existe dentro de la misma fila
                 return false; //No es válido
             }
         }
@@ -120,7 +45,7 @@ class Sudoku {
         for (let y = 0; y < this.tamano; y++) {
             if (y == pos.y) { //No comprobar la posición donde se está ingresando
                 continue;
-            } else if (this.tablero[pos.x][y] == num) { //Si el numero existe dentro de la misma columna
+            } else if (this.tablero[pos.x][y].value == num) { //Si el numero existe dentro de la misma columna
                 return false; //No es válido
             }
         }
@@ -133,7 +58,7 @@ class Sudoku {
             for (let y = 0; y < this.tamanoInterno; y++) {
                 if ((x + cuadX) == pos.x || (y + cuadY) == pos.y) { //No comprobar la posición donde se está ingresando
                     continue;
-                } else if (this.tablero[x + cuadX][y + cuadY] == num) { //Si el numero existe dentro del cuadro interno
+                } else if (this.tablero[x + cuadX][y + cuadY].value == num) { //Si el numero existe dentro del cuadro interno
                     return false; //No es válido
                 }
             }
@@ -152,7 +77,9 @@ class Sudoku {
     comprobarTablero() {
         for (let x = 0; x < this.tamano; x++) {
             for (let y = 0; y < this.tamano; y++) {
-                if (isNaN(this.tablero[x][y]) || !this.validarNumero(new Posicion(x, y), this.tablero[x][y])) { //Si no es un número o la validación no fue correcta
+                let casilla = this.tablero[x][y]; //Obtener la casilla
+
+                if (isNaN(casilla.value) || !this.validarNumero(new Posicion(x, y), casilla.value)) { //Si no es un número o la validación no fue correcta
                     return false; //El tablero está incompleto
                 }
             }
@@ -161,64 +88,79 @@ class Sudoku {
         return true;
     }
 
-    mostrarTablero() {
-        let texto = "   ";
-
-        for (let x = 0; x < this.tamano; x++) {
-            texto += "[" + (x + 1) + "]"; //Mostrar los números del eje x
-        }
-
-        texto += "\n";
-
-        for (let y = 0; y < this.tamano; y++) {
-            texto += (y + 1) + "- "; //Mostrar los números del eje y
-
-            for (let x = 0; x < this.tamano; x++) {
-                texto += " " + this.tablero[x][y] + " "; //Mostrar cada una de las casillas
-            }
-
-            texto += "\n";
-        }
-
-        console.log(texto);
-    }
-
     /**
-     * Crear un arreglo bidimensional que representa un tablero
+     * Dibujar un arreglo bidimensional de INPUT que representa un tablero
      * 
-     * @param {number} tamano Tamano del tablero
-     * @returns Un arreglo bidimensional que representa el tablero inicial
+     * @param {number} tamano Tamaño del tablero
      */
     crearTablero(tamano) {
-        let tablero = [];
+        this.tablero = [];
+        let divTablero = document.getElementById("divTablero");
 
-        for (let x = 0; x < tamano; x++) { //En todo lo largo
-            let aux = [];
+        for (let y = 0; y < tamano; y++) { //En todo lo alto
+            let divFila = document.createElement("div");
 
-            for (let y = 0; y < tamano; y++) { //En todo lo alto
-                aux.push(casillaVacia); //Agregar un caracter de casilla vacía
+            for (let x = 0; x < tamano; x++) { //En todo lo largo
+                /*
+                El codigo de abajo es equivalente en HTML a:
+                <input type="number" class="casilla casillaCorrecta"
+                    maxlength="1" max="9" min="1"
+                    oninput="if(this.value.length > this.maxLength) {/ function /};">
+                */
+                let casilla = document.createElement("input");
+                casilla.type = "number";
+                casilla.maxLength = 1;
+                casilla.classList = claseCorrecta;
+                casilla.min = "1";
+                casilla.max = "9";
+                casilla.oninput = () => {
+                    if (casilla.value.length > casilla.maxLength) { //Si se ingresa más de un caracter
+                        casilla.value = casilla.value.slice(0, casilla.maxLength); //Cortar la entrada, dejando sólo el primer caracter
+                    }
+
+                    if (this.validarNumero(new Posicion(x, y), parseInt(casilla.value)) || casilla.value.length == 0) { //Si la casilla está vacía o se ingresó un número correcto
+                        casilla.classList = claseCorrecta; //Actualizar el estilo de la casilla
+
+                        if (this.comprobarTablero()) { //Si el tablero está completo
+                            alert("Felicidades");
+                        }
+                    } else { //Si el número ingresado no es correcto
+                        casilla.classList = claseIncorrecta; //Actualizar el estilo de la casilla
+                    }
+                }
+
+                divFila.insertAdjacentElement("beforeend", casilla);
+
+                if (this.tablero[x]) { //Si existe el arreglo para esta columna
+                    this.tablero[x].push(casilla); //Agregar el nuevo elemento al arreglo ya existente
+                } else { //Si no existe el arreglo para esta columna
+                    this.tablero.push([casilla]); //Agregar un nuevo arreglo con el nuevo valor
+                }
             }
 
-            tablero.push(aux);
+            divTablero.insertAdjacentElement("beforeend", divFila);
         }
 
-        return tablero;
+        return this.tablero;
     }
 
     /**
      * Colocar algunos valores iniciales en el tablero
      */
     inicializarTablero() {
-        let cantPistas = parseInt((this.tamano * this.tamano) * 0.21);
+        let cantPistas = parseInt((this.tamano * this.tamano) * 0.21); //Calcular la cantidad de pistas a ingresar
 
-        for (let i = 0; i < cantPistas; i ++) {
-            let pos = new Posicion(this.enteroRandom(0, this.tamano), this.enteroRandom(0, this.tamano));
-            let num = this.enteroRandom(0, this.tamano) + 1;
+        for (let i = 0; i < cantPistas; i++) {
+            let pos = new Posicion(this.enteroRandom(0, this.tamano), this.enteroRandom(0, this.tamano)); //Generar una posición aleatoria
+            let num = this.enteroRandom(0, this.tamano) + 1; //Generar un número aleatorio
+            let casilla = this.tablero[pos.x][pos.y]; //Obtener la casilla
 
-            if (this.validarNumero(pos, num)) {
-                this.tablero[pos.x][pos.y] = num;
-            } else {
-                i --;
+            if (this.validarNumero(pos, num) && (!this.tablero[pos.x][pos.y].readOnly)) { //Si el numero es válido
+                casilla.value = num; //Actualizar el valor de la casilla
+                casilla.readOnly = true; //Hacer que no se pueda editar la casilla
+                casilla.classList = "casilla casillaPista"; //Actualizar el estilo de la casilla
+            } else { //Si el número no es válido
+                i--; //Volver a intentar
             }
         }
     }

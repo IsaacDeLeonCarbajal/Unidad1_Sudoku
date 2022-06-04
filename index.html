@@ -1,19 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sudoku</title>
+    <link rel="stylesheet" href="styles.css">
+    <title>Sudoku Visual</title>
 </head>
-<body>
+
+<body style="text-align: center;">
+    <h1>Sudoku</h1>
+
+    <br><br> <!--Separador-->
+
+    <div id="divTablero"></div>
+
+    <br><br> <!--Separador-->
+
+    <button onclick="document.getElementById('dlgNuevoJuego').showModal()">Nuevo Juego</button>
+    <button onclick="document.getElementById('dlgAjustes').showModal()">Ajustes</button>
+
+    <dialog id="dlgNuevoJuego">
+        <form method="dialog">
+            <h2>¿Seguro que quieres reiniciar el juego?</h2>
+            Se perderá todo tu progreso
+            <br><br>
+            <button type="submit" class="btnDialog" value="SI">Si</button>
+            <button type="submit" class="btnDialog" value="NO">No</button>
+        </form>
+    </dialog>
+
+    <dialog id="dlgAjustes">
+        <form method="dialog">
+            <h2>Ajustes</h2>
+            <div>
+                Ingrese el tamaño del tablero:
+
+                <select id="sltTamanoTablero">
+                    <option value="4">4</option>
+                    <option value="9" selected>9</option> <!--Hacerlo seleccionado por defecto-->
+                    <option value="16">16</option>
+                    <option value="25">25</option>
+                </select>
+            </div>
+            <br>
+            <button type="submit" class="btnDialog">Aplicar</button>
+        </form>
+    </dialog>
+
     <script src="clases/Posicion.js"></script>
     <script src="clases/Sudoku.js"></script>
 
     <script>
-        let sudoku = new Sudoku();
+        let tamanoTablero = document.getElementById("sltTamanoTablero").value; //Obtener el tamaño de tablero seleccionado
+        let juego = new Sudoku(tamanoTablero); //Nuevo juego
 
-        sudoku.jugar();
+        document.getElementById('dlgNuevoJuego').addEventListener('close', () => { //Cuando dlgNuevoJuego se cierre
+            if (document.getElementById('dlgNuevoJuego').returnValue == "SI") { //Si se confirma comenzar un nuevo juego
+                nuevoJuego(); //Cargar un nuevo juego
+            }
+        });
+
+        document.getElementById('dlgAjustes').addEventListener('close', () => { //Cuando dlgAjustes se cierre
+            let tam = document.getElementById("sltTamanoTablero").value; //Obtener el tamaño de tablero seleccionado
+
+            if (tamanoTablero == tam) { //Si se selecciona el tamaño actual
+                alert("Ese es el tamaño actual del tablero");
+            } else { //Si se selecciona un tamaño diferente
+                nuevoJuego(); //Comenzar un nuevo juego con el nuevo tamaño
+            }
+        });
+
+        function nuevoJuego() {
+            document.getElementById('divTablero').innerHTML = ""; //Eliminar el tablero del juego que termina
+
+            juego = new Sudoku(tamanoTablero); //Crear un nuevo juego
+        }
     </script>
 </body>
+
 </html>
