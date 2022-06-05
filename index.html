@@ -12,51 +12,51 @@
 <body style="text-align: center; background-color: rgb(160, 245, 234);">
     <h1>Sudoku</h1>
 
-    <div id="divTablero"></div>
+    <div id="div-tablero"></div>
 
     <br><br>
     <!--Separarlos-->
 
-    <button onclick="document.getElementById('dlgNuevoJuego').showModal()">Nuevo Juego</button>
-    <button onclick="document.getElementById('dlgAjustes').showModal()">Ajustes</button>
+    <button onclick="dlgNuevoJuego.showModal()">Nuevo Juego</button>
+    <button onclick="dlgAjustes.showModal()">Ajustes</button>
 
-    <dialog id="dlgNuevoJuego">
+    <dialog id="dlg-nuevo-juego">
         <form method="dialog">
             <h2>¿Seguro que quiere reiniciar el juego?</h2>
             <label>Se perderá todo su progreso</label>
             <br><br>
-            <button type="submit" class="btnDialog" value="NO">No</button>
-            <button type="submit" class="btnDialog" value="SI">Si</button>
+            <button type="submit" class="btn-dialog" value="NO">No</button>
+            <button type="submit" class="btn-dialog" value="SI">Si</button>
         </form>
     </dialog>
 
-    <dialog id="dlgAjustes">
+    <dialog id="dlg-ajustes">
         <form method="dialog">
             <h2>Ajustes</h2>
             <div>
                 <label>Ingrese el tamaño del tablero:</label>
 
-                <select id="sltTamanoTablero">
+                <select id="slt-tamano-tablero">
                     <option value="4">4</option>
+                    <!--Hacer el 9 seleccionado por defecto-->
                     <option value="9" selected>9</option>
-                    <!--Hacerlo seleccionado por defecto-->
                     <option value="16">16</option>
                     <option value="25">25</option>
                 </select>
             </div>
             <br>
-            <button type="submit" class="btnDialog" value="Cancelar">Cancelar</button>
-            <button type="submit" class="btnDialog" value="Aplicar">Aplicar</button>
+            <button type="submit" class="btn-dialog" value="Cancelar">Cancelar</button>
+            <button type="submit" class="btn-dialog" value="Aplicar">Aplicar</button>
         </form>
     </dialog>
 
-    <dialog id="dlgGanador">
+    <dialog id="dlg-ganador">
         <form method="dialog">
             <h2>Felicidades</h2>
             <label>Ha ganado el juego</label>
             <br><br>
-            <button type="submit" class="btnDialog" value="Nuevo">Nuevo Juego</button>
-            <button type="submit" class="btnDialog" value="Continuar">Continuar</button>
+            <button type="submit" class="btn-dialog" value="Nuevo">Nuevo Juego</button>
+            <button type="submit" class="btn-dialog" value="Continuar">Continuar</button>
         </form>
     </dialog>
 
@@ -64,10 +64,10 @@
     <script src="clases/Sudoku.js"></script>
 
     <script>
-        var dlgNuevoJuego = document.getElementById('dlgNuevoJuego');
-        var dlgAjustes = document.getElementById('dlgAjustes');
-        var dlgGanador = document.getElementById('dlgGanador');
-        var sltTamanoTablero = document.getElementById("sltTamanoTablero");
+        var dlgNuevoJuego = document.getElementById('dlg-nuevo-juego');
+        var dlgAjustes = document.getElementById('dlg-ajustes');
+        var dlgGanador = document.getElementById('dlg-ganador');
+        var sltTamanoTablero = document.getElementById("slt-tamano-tablero");
 
         let tamanoTablero = sltTamanoTablero.value; //Obtener el tamaño de tablero seleccionado
         let juego = new Sudoku(tamanoTablero); //Nuevo juego

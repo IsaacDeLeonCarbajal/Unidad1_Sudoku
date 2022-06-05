@@ -1,10 +1,11 @@
-//Clases para el estilo CSS de las casillas
-const claseCorrecta = "casilla casillaCorrecta";
-const claseIncorrecta = "casilla casillaIncorrecta";
+//Clases para el estilo CSS de cada tipo de casilla
+const CLASE_CORRECTA = "casilla casilla-correcta";
+const CLASE_INCORRECTA = "casilla casilla-incorrecta";
+const CLASE_PISTA = "casilla casilla-pista";
 
 class Sudoku {
 
-    tamano;
+    tamanoTablero;
     tamanoCaja;
     tablero;
 
@@ -17,10 +18,10 @@ class Sudoku {
      * @param {number} tamano El tamaño del tablero. Debe ser uno de 4, 9, 16, 25
      */
     nuevoJuego(tamano) {
-        this.tamano = tamano;
-        this.tamanoInterno = Math.sqrt(this.tamano);
+        this.tamanoTablero = tamano; //Actualizar el tamaño del tablero
+        this.tamanoInterno = Math.sqrt(this.tamanoTablero); //Calcular el tamaño de cada caja interna
 
-        document.getElementById("divTablero").innerHTML = ""; //Eliminar el tablero del juego anterior
+        document.getElementById("div-tablero").innerHTML = ""; //Eliminar el tablero del juego anterior
 
         this.crearTablero(); //Crear y dibujar el tablero
         this.inicializarTablero(); //Colocar algunos valores iniciales al tablero
@@ -38,12 +39,12 @@ class Sudoku {
      * @returns true si el número es válido, false si no
      */
     validarNumero(pos, num) {
-        if (isNaN(num) || (num < 1 || num > this.tamano)) { //Si el valor no es un número o está fuera del rango
+        if (isNaN(num) || (num < 1 || num > this.tamanoTablero)) { //Si el valor no es un número o está fuera del rango
             return false; //No es válido
         }
 
         //Comprobar la fila
-        for (let x = 0; x < this.tamano; x++) {
+        for (let x = 0; x < this.tamanoTablero; x++) {
             if (x == pos.x) { //No comprobar la posición donde se está ingresando
                 continue;
             } else if (this.tablero[x][pos.y].value == num) { //Si el numero existe dentro de la misma fila
@@ -52,7 +53,7 @@ class Sudoku {
         }
 
         //Comprobar la columna
-        for (let y = 0; y < this.tamano; y++) {
+        for (let y = 0; y < this.tamanoTablero; y++) {
             if (y == pos.y) { //No comprobar la posición donde se está ingresando
                 continue;
             } else if (this.tablero[pos.x][y].value == num) { //Si el numero existe dentro de la misma columna
@@ -83,8 +84,8 @@ class Sudoku {
      * @returns true si todos los números son correctos, false si no
      */
     comprobarTablero() {
-        for (let x = 0; x < this.tamano; x++) {
-            for (let y = 0; y < this.tamano; y++) {
+        for (let x = 0; x < this.tamanoTablero; x++) {
+            for (let y = 0; y < this.tamanoTablero; y++) {
                 let casilla = this.tablero[x][y]; //Obtener la casilla
 
                 if (isNaN(parseInt(casilla.value)) || !this.validarNumero(new Posicion(x, y), parseInt(casilla.value))) { //Si no es un número o la validación no fue correcta
@@ -93,13 +94,13 @@ class Sudoku {
             }
         }
 
+        //Si se pasa el for anterior, el tablero está completo
         //Una vez terminado el juego, no dejar editar
-        for (let x = 0; x < this.tamano; x++) {
-            for (let y = 0; y < this.tamano; y++) {
+        for (let x = 0; x < this.tamanoTablero; x++) {
+            for (let y = 0; y < this.tamanoTablero; y++) {
                 this.tablero[x][y].readOnly = true; //No dejar editar la casilla
             }
         }
-
 
         return true;
     }
@@ -111,12 +112,12 @@ class Sudoku {
      */
     crearTablero() {
         this.tablero = [];
-        let divTablero = document.getElementById("divTablero");
+        let divTablero = document.getElementById("div-tablero");
 
-        for (let y = 0; y < this.tamano; y++) { //En todo lo alto
+        for (let y = 0; y < this.tamanoTablero; y++) { //En todo lo alto
             let divFila = document.createElement("div");
 
-            for (let x = 0; x < this.tamano; x++) { //En todo lo largo
+            for (let x = 0; x < this.tamanoTablero; x++) { //En todo lo largo
                 /*
                 El codigo de abajo es equivalente en HTML a:
                 <input type="number" class="casilla casillaCorrecta"
@@ -126,23 +127,23 @@ class Sudoku {
                 */
                 let casilla = document.createElement("input");
                 casilla.type = "number";
-                casilla.maxLength = this.tamano.length;
-                casilla.classList = claseCorrecta;
+                casilla.maxLength = this.tamanoTablero.length;
+                casilla.classList = CLASE_CORRECTA;
                 casilla.min = "1";
-                casilla.max = this.tamano;
+                casilla.max = this.tamanoTablero;
                 casilla.oninput = () => { //Al ingresar datos en la casilla
                     if (casilla.value.length > casilla.maxLength) { //Si se ingresa más de un caracter
                         casilla.value = casilla.value.slice(casilla.maxLength - (casilla.maxLength - 1), casilla.maxLength + 1); //Cortar la entrada, dejando sólo los últimos caracteres válidos
                     }
 
                     if (this.validarNumero(new Posicion(x, y), parseInt(casilla.value)) || casilla.value.length == 0) { //Si la casilla está vacía o se ingresó un número correcto
-                        casilla.classList = claseCorrecta; //Actualizar el estilo de la casilla
+                        casilla.classList = CLASE_CORRECTA; //Actualizar el estilo de la casilla
 
                         if (this.comprobarTablero()) { //Si el tablero está completo
-                            document.getElementById("dlgGanador").showModal();
+                            dlgGanador.showModal();
                         }
                     } else { //Si el número ingresado no es correcto
-                        casilla.classList = claseIncorrecta; //Actualizar el estilo de la casilla
+                        casilla.classList = CLASE_INCORRECTA; //Actualizar el estilo de la casilla
                     }
                 };
                 casilla.onfocus = () => { //Al seleccionar una casilla
@@ -158,9 +159,9 @@ class Sudoku {
                     }
 
                     if (this.validarNumero(new Posicion(x, y), parseInt(casilla.value)) || casilla.value.length == 0) { //Si la casilla está vacía o se ingresó un número correcto
-                        casilla.classList = claseCorrecta; //Actualizar el estilo de la casilla
+                        casilla.classList = CLASE_CORRECTA; //Actualizar el estilo de la casilla
                     } else { //Si el número ingresado no es correcto
-                        casilla.classList = claseIncorrecta; //Actualizar el estilo de la casilla
+                        casilla.classList = CLASE_INCORRECTA; //Actualizar el estilo de la casilla
                     }
                 };
 
@@ -183,17 +184,17 @@ class Sudoku {
      * Colocar algunos valores iniciales en el tablero
      */
     inicializarTablero() {
-        let cantPistas = parseInt((this.tamano * this.tamano) * 0.21); //Calcular la cantidad de pistas a ingresar
+        let cantPistas = parseInt((this.tamanoTablero * this.tamanoTablero) * 0.21); //Calcular la cantidad de pistas a ingresar
 
         for (let i = 0; i < cantPistas; i++) {
-            let pos = new Posicion(this.enteroRandom(0, this.tamano), this.enteroRandom(0, this.tamano)); //Generar una posición aleatoria
-            let num = this.enteroRandom(0, this.tamano) + 1; //Generar un número aleatorio
+            let pos = new Posicion(this.enteroRandom(0, this.tamanoTablero), this.enteroRandom(0, this.tamanoTablero)); //Generar una posición aleatoria
+            let num = this.enteroRandom(0, this.tamanoTablero) + 1; //Generar un número aleatorio
             let casilla = this.tablero[pos.x][pos.y]; //Obtener la casilla
 
             if (this.validarNumero(pos, num) && (!this.tablero[pos.x][pos.y].readOnly)) { //Si el numero es válido
                 casilla.value = num; //Actualizar el valor de la casilla
                 casilla.readOnly = true; //Hacer que no se pueda editar la casilla
-                casilla.classList = "casilla casillaPista"; //Actualizar el estilo de la casilla
+                casilla.classList = CLASE_PISTA; //Actualizar el estilo de la casilla
             } else { //Si el número no es válido
                 i--; //Volver a intentar
             }

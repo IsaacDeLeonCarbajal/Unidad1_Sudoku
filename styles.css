@@ -38,25 +38,25 @@ button:hover {
     border-color: rgb(110, 110, 110);
 }
 
-.casillaCorrecta {
+.casilla-correcta {
     color: black;
     border-color: rgb(110, 110, 110);
     background-color: white;
 }
 
-.casillaIncorrecta {
+.casilla-incorrecta {
     color: rgb(250, 54, 84);
     border-color: rgb(250, 54, 84);
     background-color: rgb(222, 184, 205);
 }
 
-.casillaPista {
+.casilla-pista {
     color: black;
     border-color: rgb(110, 110, 110);
     background-color: rgb(200, 200, 200);
 }
 
-.btnDialog {
+.btn-dialog {
     font-weight: normal;
     font-size: 1em;
     border-width: 2px;
@@ -65,7 +65,7 @@ button:hover {
     color: black;
 }
 
-.btnDialog:hover {
+.btn-dialog:hover {
     background-color: black;
     border-color: black;
     color: white;
