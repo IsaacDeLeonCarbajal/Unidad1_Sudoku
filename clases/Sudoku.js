@@ -184,7 +184,7 @@ class Sudoku {
      * Colocar algunos valores iniciales en el tablero
      */
     inicializarTablero() {
-        let cantPistas = parseInt((this.tamanoTablero * this.tamanoTablero) * 0.21); //Calcular la cantidad de pistas a ingresar
+        let cantPistas = parseInt((this.tamanoTablero * this.tamanoTablero) * 0.25); //Calcular la cantidad de pistas a ingresar
 
         for (let i = 0; i < cantPistas; i++) {
             let pos = new Posicion(this.enteroRandom(0, this.tamanoTablero), this.enteroRandom(0, this.tamanoTablero)); //Generar una posición aleatoria
